@@ -1,0 +1,9 @@
+-Change the idea into audio steganography
+-Remove GA
+-Finding the best way to explain the relation between Alpha and n
+-Improve Robustness (channel encoding or spread spectrum)
+-Add QPSK. 8,16,,32,64,128- PSK
+-Add latex algorithm section/part/block
+-Analyisis on the statistical undetectably of the embedded audio
+-Strategy to improve the inaudibility exploiting psycho-acoustic model
+-Need atacks analysis
