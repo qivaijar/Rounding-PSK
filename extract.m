@@ -32,6 +32,8 @@ rn=extractDigit(alfa)-2;
 sp=ini_samp;
 ai=1;
 eP=[];
+
+
 for ai=1:y-1
     
     while sp<=n_samp/2                              %kalau index kolom masih dalam batasan n_samp, lanjutkan proses extracting
@@ -39,8 +41,8 @@ for ai=1:y-1
             break
         end
         if abs(yfr(sp,ai))>treshold  && angle(yfr(sp,ai))~=0
-            
-           eP=[eP alfa*(angle(yfr(sp,ai))-round(angle(yfr(sp,ai)),rn))];
+           exPhase=alfa*(angle(yfr(sp,ai))-round(angle(yfr(sp,ai)),rn));
+           eP=[eP exPhase];
            im=im+1;
         end
         sp=sp+jump;
@@ -49,8 +51,8 @@ for ai=1:y-1
     end
     sp=ini_samp;
 end
-eP=double(~eP);
-wr=pskdemod(eP,M);
+compEp=cos(eP)+i*sin(eP);
+wr=pskdemod(compEp,M,pi/2);
 [wtd ber]=imrecon(coltype,mary,wr,wres,he,we);
 
 finewater=uint8(wtd);

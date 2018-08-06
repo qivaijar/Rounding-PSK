@@ -36,7 +36,7 @@ coltype=dim;
 
 %% generate symbol phase and convert into radian
 
-padd=angle(pskmod(wres,M,pi/2));
+padd=angle(pskmod([0 M-1],M,pi/2));
 padd=padd./alfa;
 %% sound preprcessing (framing)
 [ye fs]=audioread(fileori);
@@ -55,16 +55,17 @@ if mxs<watSize
     error(msg);
 end
 %% embedding
-sp=ini_samp;     %untuk tahu batasan embedd
-ai=1;            %untuk col yf
-j=1;             %index simbol
-im=1;            %index watermark
+sp=ini_samp;     %to find the limitation of watermarking slot
+ai=1;            %for column calculation
+j=1;             %symbol index
+im=1;            %watermark index
+
 
 rn=extractDigit(alfa)-2;
 
 for ai=1:y-1                                            %index kolom
 
-    while sp<=n_samp/2                                      %kalau index baris masih dalam batasan n_samp, lanjutkan proses embedding
+    while sp<=n_samp/4                                      %kalau index baris masih dalam batasan n_samp, lanjutkan proses embedding
         
         if abs(yf(sp,ai))>treshold && angle(yf(sp,ai))~=0
             while wres(im)~=GCodes(j)                        %nyari graycodes untuk simbol
