@@ -1,4 +1,4 @@
-function yfc=embed(fileori,waterim,arc,alfa,n_samp,ini_samp,jump,BitPerSample,attack,pulsenum,mary,treshold)
+function embed(fileori,waterim,alfa,n_samp,ini_samp,jump,BitPerSample,attack,mary,treshold)
 warning('off','all');
 %% info
 %coltype = 1-Grayscale,2-BW,3-RGB
@@ -29,21 +29,15 @@ end
 M= mary;
 Symbol = (0:M-1);
 GCodes = bin2gray(Symbol,'psk',M);
-%% generate symbol phase and convert into radian
-% arc = 300;                                          %OV
-arch = arc/2;
-PhaseSpace = arc/M;
-% alpha=100;                                         %OV  ;minimal 100. dibawah 100 ke-clip
-for sim=1:M    %sim = titik atau plot di diagram konstelasi
-    PlotDeg(sim)=-arch+(sim-0.5)*PhaseSpace;
-    PlotRad(sim)=PlotDeg(sim)*pi/180;
-    EPhase(sim)=PlotRad(sim)/alfa;
-end
-padd=EPhase;
 %% image preprocessing
-[a b c d e dim]=improc(waterim,mary,pulsenum);
-p=a;l=b;wres=c;wresi=d;watSize=e;
+[he we sym watSize dim]=improc(waterim,mary);
+wres=sym;
 coltype=dim;
+
+%% generate symbol phase and convert into radian
+
+padd=angle(pskmod(wres,M,pi/2));
+padd=padd./alfa;
 %% sound preprcessing (framing)
 [ye fs]=audioread(fileori);
 Y=buffer(ye,n_samp);
@@ -68,23 +62,10 @@ im=1;            %index watermark
 
 rn=extractDigit(alfa)-2;
 
-% if alfa<100      %nentuin besar pembulatan
-%     rn=0;          %eksper
-% elseif alfa<1000
-%     rn=1;
-% elseif alfa<10000
-%     rn=2;
-% elseif alfa<100000
-%     rn=3;
-% elseif alfa<1000000
-%     rn=4;
-% end
-
 for ai=1:y-1                                            %index kolom
-% for ai=round(y/3):y-1
+
     while sp<=n_samp/2                                      %kalau index baris masih dalam batasan n_samp, lanjutkan proses embedding
         
-        %            if abs(yf(sp,ai))~=0 && angle(yf(sp,ai))~=0
         if abs(yf(sp,ai))>treshold && angle(yf(sp,ai))~=0
             while wres(im)~=GCodes(j)                        %nyari graycodes untuk simbol
                 j=j+1;
@@ -129,4 +110,4 @@ if attack~=0
 end
 %% save watermark key
 delete key.mat
-save('key.mat','alfa','n_samp','ini_samp','jump','arc','watSize','p','l','wresi','pulsenum','coltype','mary','treshold','dim','waterim');
+save('key.mat','alfa','n_samp','ini_samp','jump','watSize','he','we','wres','coltype','mary','treshold','dim','waterim');
