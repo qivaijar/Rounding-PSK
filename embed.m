@@ -36,7 +36,7 @@ coltype=dim;
 
 %% generate symbol phase and convert into radian
 
-padd=angle(pskmod([0 M-1],M,pi/2));
+padd=angle(pskmod(GCodes,M,pi/2));
 padd=padd./alfa;
 %% sound preprcessing (framing)
 [ye fs]=audioread(fileori);
@@ -44,9 +44,13 @@ Y=buffer(ye,n_samp);
 yf=fft(Y,n_samp,1);
 %% maximum channel per frame
 [x y]=size(yf);
-mxs=mws1(yf,ini_samp,n_samp,y,jump,treshold);
+
+
+bandDiv=1;   %frequency band division factor for watermarking slot limitation (greater than 0, maximum 1)
+
+mxs=mws1(yf,ini_samp,n_samp,y,jump,treshold,bandDiv);
 if mxs<watSize
-    msg='Tidak cukup slot watermark tersedia. Coba ubah gambar atau parameter kapasitas.';
+    msg='Not enough watermarking slot to embed the watermark.';
     ini_samp
     n_samp
     jump
@@ -61,14 +65,16 @@ j=1;             %symbol index
 im=1;            %watermark index
 
 
+    %division factor for the band limitation
+
 rn=extractDigit(alfa)-2;
 
 for ai=1:y-1                                            %index kolom
 
-    while sp<=n_samp/4                                      %kalau index baris masih dalam batasan n_samp, lanjutkan proses embedding
+    while sp<=round(n_samp/(2*bandDiv))
         
         if abs(yf(sp,ai))>treshold && angle(yf(sp,ai))~=0
-            while wres(im)~=GCodes(j)                        %nyari graycodes untuk simbol
+            while wres(im)~=GCodes(j) %finding the Grycodes for the symbol
                 j=j+1;
             end
             es=yf(sp,ai);
@@ -111,4 +117,4 @@ if attack~=0
 end
 %% save watermark key
 delete key.mat
-save('key.mat','alfa','n_samp','ini_samp','jump','watSize','he','we','wres','coltype','mary','treshold','dim','waterim');
+save('key.mat','alfa','n_samp','ini_samp','jump','watSize','he','we','wres','coltype','mary','treshold','dim','waterim','bandDiv');

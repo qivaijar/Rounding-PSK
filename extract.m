@@ -36,7 +36,7 @@ eP=[];
 
 for ai=1:y-1
     
-    while sp<=n_samp/2                              %kalau index kolom masih dalam batasan n_samp, lanjutkan proses extracting
+    while sp<=round(n_samp/(2*bandDiv))
         if im>watSize
             break
         end
@@ -51,7 +51,7 @@ for ai=1:y-1
     end
     sp=ini_samp;
 end
-compEp=cos(eP)+i*sin(eP);
+compEp=cos(eP)+1i*sin(eP);
 wr=pskdemod(compEp,M,pi/2);
 [wtd ber]=imrecon(coltype,mary,wr,wres,he,we);
 
