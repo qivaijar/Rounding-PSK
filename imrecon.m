@@ -38,7 +38,9 @@ switch c_type
             OriSym=reshape(de2bi(OriSym),[1 8*H*W]);
             [a ER]=symerr(OriSym,uint8(writee));        
             
-            Proc_im=de2bi(wet);
+            Proc_im=de2bi(wet).';
+            Proc_im=reshape(Proc_im,[1 3*length(wet)]);
+            Proc_im=Proc_im(1:tb);
             Proc_im=reshape(Proc_im,[H*W,8]);
             Proc_im=reshape(bi2de(Proc_im),[H,W]);
             
