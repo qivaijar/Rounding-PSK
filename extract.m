@@ -33,10 +33,10 @@ sp=ini_samp;
 ai=1;
 eP=[];
 
-
+maxSamp=((n_samp/2)*bandDiv);
 for ai=1:y-1
     
-    while sp<=round(n_samp/(2*bandDiv))
+    while sp<=maxSamp
         if im>watSize
             break
         end
@@ -53,7 +53,7 @@ for ai=1:y-1
 end
 compEp=cos(eP)+1i*sin(eP);
 wr=pskdemod(compEp,M,pi/2);
-[wtd ber]=imrecon(coltype,mary,wr,wres,he,we);
+[wtd ber]=imrecon(coltype,mary,wr,wres,he,we,tb);
 
 finewater=uint8(wtd);
 imwrite(finewater,'eks.bmp');

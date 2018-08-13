@@ -1,8 +1,13 @@
-function [he, we, sym, watSize, dim]=improc(in_im,m)
+function [he, we, sym, watSize, dim,tb]=improc(in_im,m)
 
 procim=imread(in_im);
 [he we dim]=size(procim);
 type=dim;
+
+bitpersamp=8;        %Grayscale
+
+tb=he*we*bitpersamp;
+
 
 switch type
     
@@ -10,19 +15,27 @@ switch type
         if m==2
             resIm=reshape(procim,[1,he*we]);
             binform=de2bi(resIm);
-            sym=reshape(double(binform),[1 he*we*8]);  %% yang bakal disisipkan       
-            watSize=8*he*we;     %% watsize
-%         elseif m==4
-%             resIm=reshape(procim,[1,a*b]);
-%             binwres=de2bi(d);
-%             c=rectpulse(double(d));            
-%             d=reshape(binwres,[2,4*a*b]);
-%             e=a*b;
+            sym=reshape(double(binform),[1 he*we*8]);  %% symbol to be embedded
+            watSize=size(sym);    
+        elseif m==4
+            resIm=reshape(procim,[1,he*we]);
+            binform=de2bi(resIm);           
+            binform=reshape(binform,[he*we*4,2]);
+            sym=double(bi2de(binform).');
+            watSize=size(sym);
+        elseif m==8
+            resIm=reshape(procim,[1,he*we]);
+            binform=de2bi(resIm);           
+            binform=reshape(binform,[1,size(binform,1)*size(binform,2)]);            
+            binform=buffer(binform,3).';
+            sym=double(bi2de(binform).');
+            watSize=size(sym);
         elseif m==256
             resIm=reshape(procim,[1,he*we]);
             sym=double(resIm);            
-            watSize=he*we;
+            watSize=size(sym);
         end
+
         
 %     case 3   %RGB
 %         if m==2

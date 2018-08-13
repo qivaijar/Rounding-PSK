@@ -1,4 +1,4 @@
-function embed(fileori,waterim,alfa,n_samp,ini_samp,jump,BitPerSample,attack,mary,treshold)
+function embed(fileori,waterim,alfa,n_samp,ini_samp,jump,BitPerSample,attack,mary,treshold,bandDiv)
 warning('off','all');
 %% info
 %coltype = 1-Grayscale,2-BW,3-RGB
@@ -7,6 +7,7 @@ warning('off','all');
 
 asdqwe=pwd;
 %% Parameter check
+
 x = log2(n_samp);
 if round(x) ~= x
     msg = 'n_samp has to be a number of the series of 2^n';
@@ -30,7 +31,7 @@ M= mary;
 Symbol = (0:M-1);
 GCodes = bin2gray(Symbol,'psk',M);
 %% image preprocessing
-[he we sym watSize dim]=improc(waterim,mary);
+[he we sym watSize dim, tb]=improc(waterim,mary);
 wres=sym;
 coltype=dim;
 
@@ -46,7 +47,7 @@ yf=fft(Y,n_samp,1);
 [x y]=size(yf);
 
 
-bandDiv=1;   %frequency band division factor for watermarking slot limitation (greater than 0, maximum 1)
+% bandDiv=1;   %frequency band division factor for watermarking slot limitation (greater than 0, maximum 1)
 
 mxs=mws1(yf,ini_samp,n_samp,y,jump,treshold,bandDiv);
 if mxs<watSize
@@ -64,14 +65,14 @@ ai=1;            %for column calculation
 j=1;             %symbol index
 im=1;            %watermark index
 
-
+maxSamp=((n_samp/2)*bandDiv);
     %division factor for the band limitation
 
 rn=extractDigit(alfa)-2;
 
 for ai=1:y-1                                            %index kolom
 
-    while sp<=round(n_samp/(2*bandDiv))
+    while sp<=maxSamp
         
         if abs(yf(sp,ai))>treshold && angle(yf(sp,ai))~=0
             while wres(im)~=GCodes(j) %finding the Grycodes for the symbol
@@ -117,4 +118,4 @@ if attack~=0
 end
 %% save watermark key
 delete key.mat
-save('key.mat','alfa','n_samp','ini_samp','jump','watSize','he','we','wres','coltype','mary','treshold','dim','waterim','bandDiv');
+save('key.mat','alfa','n_samp','ini_samp','jump','watSize','he','we','wres','coltype','mary','treshold','dim','waterim','bandDiv','tb');

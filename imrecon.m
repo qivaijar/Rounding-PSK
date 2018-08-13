@@ -1,4 +1,4 @@
-function [Proc_im ER]=imrecon(c_type,mary,es,OriSym,H,W)
+function [Proc_im ER]=imrecon(c_type,mary,es,OriSym,H,W,tb)
 
 
 switch c_type
@@ -13,10 +13,39 @@ switch c_type
             Proc_im=bi2de(wet).';
             Proc_im=reshape(Proc_im,[H,W]);
             
+        elseif mary==4
+            wri=uint8(es);
+            if length(wri)<length(OriSym)
+                wri=[wri randi([0 mary-1], 1,length(OriSym)-length(wri))];
+            end
+            wet=uint8(wri).';           
+            writee=reshape(de2bi(wri),[1 8*H*W]);
+            OriSym=reshape(de2bi(OriSym),[1 8*H*W]);
+            [a ER]=symerr(OriSym,uint8(writee));        
+            
+            Proc_im=de2bi(wet);
+            Proc_im=reshape(Proc_im,[H*W,8]);
+            Proc_im=reshape(bi2de(Proc_im),[H,W]);
+       
+        elseif mary==8
+            wri=uint8(es);
+            if length(wri)<length(OriSym)
+                wri=[wri randi([0 mary-1], 1,length(OriSym)-length(wri))];
+            end
+            wet=uint8(wri).';           
+            writee=reshape(de2bi(wri),[1 3*length(wri)]);
+            writee=writee(1:tb);
+            OriSym=reshape(de2bi(OriSym),[1 8*H*W]);
+            [a ER]=symerr(OriSym,uint8(writee));        
+            
+            Proc_im=de2bi(wet);
+            Proc_im=reshape(Proc_im,[H*W,8]);
+            Proc_im=reshape(bi2de(Proc_im),[H,W]);
+            
         elseif mary==256
             wri=uint8(es);
-            if length(wri)<H*W
-                wri=[wri randi([0 mary-1], 1,H*W-length(wri))];
+            if length(wri)<length(OriSym)
+                wri=[wri randi([0 mary-1], 1,length(OriSym)-length(wri))];
             end
             Proc_im=uint8(reshape(wri,[H,W]));
             writee=reshape(de2bi(wri),[1 8*H*W]);
